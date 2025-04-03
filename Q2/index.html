@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --success-color: #4cc9a0;
+            --error-color: #ef476f;
+            --background-color: #f9f9fb;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+            --shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .form-group.error input {
+            border-color: var(--error-color);
+            background-color: rgba(239, 71, 111, 0.05);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary-color);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .submit-btn:disabled {
+            background-color: #a0a0a0;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .result-message {
+            padding: 16px;
+            margin-top: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .result-message.success {
+            background-color: rgba(76, 201, 160, 0.15);
+            color: var(--success-color);
+            border: 1px solid rgba(76, 201, 160, 0.3);
+            display: block;
+        }
+
+        .result-message.error {
+            background-color: rgba(239, 71, 111, 0.15);
+            color: var(--error-color);
+            border: 1px solid rgba(239, 71, 111, 0.3);
+            display: block;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Create Account</h1>
+            <p>Join our community today!</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="registration-form">
+                <div class="form-group" id="name-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name">
+                    <div class="error-message">Please enter your full name</div>
+                </div>
+                
+                <div class="form-group" id="email-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address">
+                    <div class="error-message">Please enter a valid email address</div>
+                </div>
+                
+                <div class="form-group" id="password-group">
+                    <label for="password">Password</label>
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" placeholder="Create a password">
+                        <button type="button" id="toggle-password" class="toggle-password">Show</button>
+                    </div>
+                    <div class="error-message">Password must be at least 6 characters</div>
+                </div>
+                
+                <button type="submit" id="submit-btn" class="submit-btn">
+                    <span id="btn-text">Create Account</span>
+                    <div id="spinner" class="spinner"></div>
+                </button>
+                
+                <div id="result-message" class="result-message"></div>
+            </form>
+            
+            <div class="login-link">
+                Already have an account? <a href="#">Log in</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // DOM Elements
+        const form = document.getElementById('registration-form');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const togglePasswordBtn = document.getElementById('toggle-password');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const spinner = document.getElementById('spinner');
+        const resultMessage = document.getElementById('result-message');
+        
+        // Form Groups
+        const nameGroup = document.getElementById('name-group');
+        const emailGroup = document.getElementById('email-group');
+        const passwordGroup = document.getElementById('password-group');
+        
+        // Toggle password visibility
+        togglePasswordBtn.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePasswordBtn.textContent = type === 'password' ? 'Show' : 'Hide';
+        });
+        
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            
+            // Reset previous error states
+            nameGroup.classList.remove('error');
+            emailGroup.classList.remove('error');
+            passwordGroup.classList.remove('error');
+            
+            // Validate name
+            if (!nameInput.value.trim()) {
+                nameGroup.classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
+                emailGroup.classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!passwordInput.value || passwordInput.value.length < 6) {
+                passwordGroup.classList.add('error');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        // Show loading state
+        function setLoadingState(isLoading) {
+            if (isLoading) {
+                btnText.textContent = 'Creating Account...';
+                spinner.style.display = 'block';
+                submitBtn.disabled = true;
+                nameInput.disabled = true;
+                emailInput.disabled = true;
+                passwordInput.disabled = true;
+                togglePasswordBtn.disabled = true;
+            } else {
+                btnText.textContent = 'Create Account';
+                spinner.style.display = 'none';
+                submitBtn.disabled = false;
+                nameInput.disabled = false;
+                emailInput.disabled = false;
+                passwordInput.disabled = false;
+                togglePasswordBtn.disabled = false;
+            }
+        }
+        
+        // Show result message
+        function showResultMessage(message, isSuccess) {
+            resultMessage.textContent = message;
+            resultMessage.className = 'result-message';
+            
+            if (isSuccess) {
+                resultMessage.classList.add('success');
+            } else {
+                resultMessage.classList.add('error');
+            }
+            
+            // Scroll to the message
+            resultMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // Handle form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Clear previous result message
+            resultMessage.className = 'result-message';
+            resultMessage.textContent = '';
+            
+            // Validate form
+            if (!validateForm()) {
+                return;
+            }
+            
+            // Set loading state
+            setLoadingState(true);
+            
+            // Prepare form data
+            const userData = {
+                name: nameInput.value.trim(),
+                email: emailInput.value.trim(),
+                password: passwordInput.value
+            };
+            
+            try {
+                // In a real application, this would be an actual API call
+                // const response = await fetch('https://mockapi.io/users', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     },
+                //     body: JSON.stringify(userData)
+                // });
+                
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Simulate API response
+                // For demo purposes, we'll randomly succeed or fail
+                const shouldSucceed = Math.random() > 0.3; // 70% success rate
+                
+                if (shouldSucceed) {
+                    // Simulate successful registration
+                    showResultMessage('Account created successfully! Welcome to our platform.', true);
+                    
+                    // Reset form on success
+                    form.reset();
+                } else {
+                    // Simulate error from the API
+                    const errorType = Math.random() > 0.5 ? 'email' : 'server';
+                    
+                    if (errorType === 'email') {
+                        showResultMessage('Email address is already registered. Please use a different email or login.', false);
+                        emailGroup.classList.add('error');
+                    } else {
+                        showResultMessage('Unable to create account. Please try again later.', false);
+                    }
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showResultMessage('Network error. Please check your connection and try again.', false);
+            } finally {
+                // Reset loading state
+                setLoadingState(false);
+            }
+        });
+        
+        // Real-time validation feedback
+        nameInput.addEventListener('input', function() {
+            if (nameInput.value.trim()) {
+                nameGroup.classList.remove('error');
+            }
+        });
+        
+        emailInput.addEventListener('input', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailRegex.test(emailInput.value.trim())) {
+                emailGroup.classList.remove('error');
+            }
+        });
+        
+        passwordInput.addEventListener('input', function() {
+            if (passwordInput.value && passwordInput.value.length >= 6) {
+                passwordGroup.classList.remove('error');
+            }
+        });
+    </script>
+</body>
+</html>
